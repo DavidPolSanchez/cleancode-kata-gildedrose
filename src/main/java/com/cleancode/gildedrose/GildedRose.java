@@ -1,63 +1,72 @@
 package com.cleancode.gildedrose;
 
 public class GildedRose {
+    public static final String AGED_BRIE = "Aged Brie";
+    public static final String BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert";
+    public static final String SULFURAS = "Sulfuras, Hand of Ragnaros";
+    public static final String COURSED = "Coursed";
     Item[] items;
 
-    public GildedRose(Item[] items) {
+    public GildedRose(Item... items) {
         this.items = items;
     }
 
     public void updateQuality() {
-        for (int i = 0; i < items.length; i++) {
-            if (!items[i].name.equals("Aged Brie")
-                    && !items[i].name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                if (items[i].quality > 0) {
-                    if (!items[i].name.equals("Sulfuras, Hand of Ragnaros")) {
-                        items[i].quality = items[i].quality - 1;
-                    }
-                }
-            } else {
-                if (items[i].quality < 50) {
-                    items[i].quality = items[i].quality + 1;
-
-                    if (items[i].name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                        if (items[i].sellIn < 11) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-
-                        if (items[i].sellIn < 6) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!items[i].name.equals("Sulfuras, Hand of Ragnaros")) {
-                items[i].sellIn = items[i].sellIn - 1;
-            }
-
-            if (items[i].sellIn < 0) {
-                if (!items[i].name.equals("Aged Brie")) {
-                    if (!items[i].name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                        if (items[i].quality > 0) {
-                            if (!items[i].name.equals("Sulfuras, Hand of Ragnaros")) {
-                                items[i].quality = items[i].quality - 1;
-                            }
-                        }
-                    } else {
-                        items[i].quality = items[i].quality - items[i].quality;
-                    }
-                } else {
-                    if (items[i].quality < 50) {
-                        items[i].quality = items[i].quality + 1;
-                    }
-                }
-            }
+        for (Item item : items) {
+            UpdateQualityItem(item);
         }
+    }
+
+    private void UpdateQualityItem(Item  item) {
+        boolean isExpired = item.sellIn < 1;
+        int degradeRate= determineDegrateRate(item,isExpired);
+        boolean doesDegrade = !item.name.equals(AGED_BRIE) && !item.name.equals(BACKSTAGE_PASSES) && !item.name.equals(SULFURAS);
+        boolean hasSellByDate = !item.name.equals(SULFURAS);
+
+        if(doesDegrade){
+            addjustQuality(item,degradeRate);
+        }
+
+        if(item.name.equals(AGED_BRIE)){
+            int adjustment = isExpired?2:1;
+            addjustQuality(item,adjustment);
+        }
+
+        if (item.name.equals(BACKSTAGE_PASSES)) {
+            updateBackStagePassQuality(item, isExpired);
+
+        }
+
+        if(hasSellByDate){
+            item.sellIn = item.sellIn -1;
+        }
+    }
+
+    private void updateBackStagePassQuality(Item item, boolean isExpired) {
+        addjustQuality(item,1);
+        if (item.sellIn<11){
+            addjustQuality(item,1);
+        }
+        if (item.sellIn<6){
+            addjustQuality(item,1);
+        }
+        if (isExpired) {
+            item.quality = item.quality - item.quality;
+        }
+    }
+
+    private int determineDegrateRate(Item item, boolean isExpired) {
+        int baseDegrade= item.name.equals(COURSED) ?-2:-1;
+        return isExpired?baseDegrade*2:baseDegrade;
+    }
+
+    public static void addjustQuality(Item item, int adjustment) {
+        int newQuality=  item.quality + adjustment;
+        boolean isInValidRange = newQuality<=50 && newQuality>=0;
+        if (isInValidRange){
+             item.quality = item.quality + adjustment;
+        }
+
     }
 
     public static void main(String[] args) {
@@ -65,13 +74,14 @@ public class GildedRose {
 
         Item[] items = new Item[] {
                 new Item("+5 Dexterity Vest", 10, 20), //
-                new Item("Aged Brie", 2, 0), //
+                new Item(AGED_BRIE, 2, 0), //
                 new Item("Elixir of the Mongoose", 5, 7), //
-                new Item("Sulfuras, Hand of Ragnaros", 0, 80), //
-                new Item("Sulfuras, Hand of Ragnaros", -1, 80),
-                new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20),
-                new Item("Backstage passes to a TAFKAL80ETC concert", 10, 49),
-                new Item("Backstage passes to a TAFKAL80ETC concert", 5, 49),
+                new Item(SULFURAS, 0, 80), //
+                new Item(SULFURAS, -1, 80),
+                new Item(BACKSTAGE_PASSES, 15, 20),
+                new Item(BACKSTAGE_PASSES, 10, 49),
+                new Item(BACKSTAGE_PASSES, 5, 49),
+                new Item(COURSED, 3, 6),
                 // this conjured item does not work properly yet
                 //new Item("Conjured Mana Cake", 3, 6)
         };

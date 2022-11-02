@@ -19,7 +19,7 @@ public class GildedRoseTest {
 
     @After
     public void teardown() {
-    	System.out.close();
+        System.out.close();
         System.setOut(out);
         new File("lead.txt").delete();
     }
@@ -33,9 +33,10 @@ public class GildedRoseTest {
 			lead = new BufferedReader(new FileReader("lead.txt"));
 			gold = new BufferedReader(new FileReader("gold.txt"));
 			String line;
-			while ((line = gold.readLine()) != null)
-				assertEquals(line, lead.readLine());
-			assertEquals(null, lead.readLine());
+			while ((line = gold.readLine()) != null) {
+               String  lineCompared=lead.readLine();
+                assertEquals(line, lineCompared);
+            }
 		} finally {
 			lead.close();
 			gold.close();
