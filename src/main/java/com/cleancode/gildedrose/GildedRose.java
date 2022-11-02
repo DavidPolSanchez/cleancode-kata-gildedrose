@@ -4,7 +4,7 @@ public class GildedRose {
     public static final String AGED_BRIE = "Aged Brie";
     public static final String BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert";
     public static final String SULFURAS = "Sulfuras, Hand of Ragnaros";
-    public static final String COURSED = "Coursed";
+    public static final String COURSED = "Conjured Mana Cake";
     Item[] items;
 
     public GildedRose(Item... items) {
@@ -82,8 +82,7 @@ public class GildedRose {
                 new Item(BACKSTAGE_PASSES, 10, 49),
                 new Item(BACKSTAGE_PASSES, 5, 49),
                 new Item(COURSED, 3, 6),
-                // this conjured item does not work properly yet
-                //new Item("Conjured Mana Cake", 3, 6)
+
         };
 
         GildedRose app = new GildedRose(items);
